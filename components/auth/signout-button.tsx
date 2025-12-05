@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { signOutAction } from "@/app/actions/auth";
 import { toast } from "sonner";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export function SignOutButton({
   variant = "outline",
@@ -30,7 +30,7 @@ export function SignOutButton({
 
     try {
       await signOutAction();
-      redirect("/");
+      // The signOutAction redirects, so we might not reach this code
     } catch (err) {
       toast.error("An error occurred during sign out");
       setIsLoading(false);

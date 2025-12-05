@@ -147,7 +147,7 @@ export function LoginForm({
               />
               <Field>
                 <Button
-                  type="button"
+                  type="submit"
                   onClick={form.handleSubmit(onSubmit)}
                   disabled={isLoading}
                 >
