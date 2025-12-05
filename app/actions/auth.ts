@@ -16,16 +16,16 @@ export async function signUpAction(formData: FormData) {
   redirect("/");
 }
 
-export async function signInAction(formData: FormData) {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+// export async function signInAction(formData: FormData) {
+//   const email = formData.get("email") as string;
+//   const password = formData.get("password") as string;
 
-  await auth.api.signInEmail({
-    body: { email, password },
-  });
+//   await auth.api.signInEmail({
+//     body: { email, password },
+//   });
 
-  redirect("/");
-}
+//   redirect("/");
+// }
 
 export async function signInActionForResult(email: string, password: string) {
   try {

@@ -83,6 +83,7 @@ export function SignupForm({
     }
   }
 
+  // TODO: Implement google signup functionality
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -199,7 +200,7 @@ export function SignupForm({
               </Field>
               <Field>
                 <Button
-                  type="button"
+                  type="submit"
                   onClick={form.handleSubmit(onSubmit)}
                   disabled={isLoading}
                 >

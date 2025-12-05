@@ -53,7 +53,7 @@ saas/
 │   ├── services.ts              # Esquema de serviços
 │   ├── appointments.ts          # Esquema de agendamentos
 │   └── ...
-├── middleware.ts               # Middleware para proteção de rotas
+├── proxy.ts                    # Middleware para proteção de rotas
 ├── auth.config.ts              # Configuração do Better Auth
 ├── drizzle.config.ts           # Configuração do Drizzle ORM
 ├── docker-compose.yml          # Configuração do Docker para PostgreSQL
