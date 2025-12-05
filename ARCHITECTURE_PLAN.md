@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-Este documento descreve a arquitetura do sistema de agendamento para barbearias, um sistema multi-tenant construído com Next.js 16, TypeScript, PostgreSQL, Drizzle ORM, NextAuth.js, Tailwind CSS e ShadCN UI.
+Este documento descreve a arquitetura do sistema de agendamento para barbearias, um sistema multi-tenant construído com Next.js 16, TypeScript, PostgreSQL, Drizzle ORM, Better Auth, Tailwind CSS e ShadCN UI.
 
 ## Tecnologias Utilizadas
 
@@ -10,7 +10,7 @@ Este documento descreve a arquitetura do sistema de agendamento para barbearias,
 - **TypeScript**: Linguagem de programação com tipagem estática
 - **PostgreSQL**: Banco de dados relacional para armazenamento persistente
 - **Drizzle ORM**: Mapeamento objeto-relacional para interação com o banco de dados
-- **NextAuth.js**: Solução de autenticação para Next.js
+- **Better Auth**: Solução de autenticação moderna e segura
 - **Tailwind CSS**: Framework CSS utilitário para estilização
 - **ShadCN UI**: Biblioteca de componentes acessíveis e customizáveis
 - **Docker**: Plataforma para virtualização de containers para PostgreSQL
@@ -54,7 +54,7 @@ saas/
 │   ├── appointments.ts          # Esquema de agendamentos
 │   └── ...
 ├── middleware.ts               # Middleware para proteção de rotas
-├── auth.config.ts              # Configuração do NextAuth.js
+├── auth.config.ts              # Configuração do Better Auth
 ├── drizzle.config.ts           # Configuração do Drizzle ORM
 ├── docker-compose.yml          # Configuração do Docker para PostgreSQL
 ├── .env                        # Variáveis de ambiente
@@ -72,7 +72,7 @@ saas/
 - `next`: Framework React para renderização do lado do servidor e client-side routing
 - `react`, `react-dom`: Biblioteca fundamental para construção de interfaces de usuário
 - `postgresql`, `drizzle-orm`, `@neondatabase/serverless`: Banco de dados PostgreSQL e ORM para interação segura com o banco
-- `next-auth`, `@auth/drizzle-adapter`: Solução completa de autenticação com suporte a múltiplos provedores e persistência
+- `@better-auth/node`, `@better-auth/adapter-drizzle`: Solução completa de autenticação com suporte a múltiplos provedores e persistência
 - `tailwindcss`: Framework CSS utilitário para estilização rápida e responsiva
 - `@radix-ui/react-*`: Componentes primitivos acessíveis para construção de designs personalizados
 - `lucide-react`: Biblioteca de ícones consistente e leve
@@ -185,7 +185,7 @@ barbers: id, user_id, tenant_id, specializations, created_at, updated_at
 
 ## Autenticação e Autorização
 
-### NextAuth.js
+### Better Auth
 
 - Provedor de credenciais (email/senha)
 - Adaptador Drizzle para persistência
@@ -195,9 +195,12 @@ barbers: id, user_id, tenant_id, specializations, created_at, updated_at
 #### Configuração Principal
 
 - Arquivo de configuração: `auth.config.ts`
-- Provedor de credenciais com hashing de senha via bcrypt
+- Configuração de provedores de autenticação
 - Persistência de sessão no banco de dados
-- Callbacks personalizados para controle de acesso
+- Hooks personalizados para controle de acesso
+- JWT para tokens de sessão
+- Persistência de sessão no banco de dados
+- Hooks personalizados para controle de acesso
 - JWT para tokens de sessão
 
 #### Estratégia de Autenticação Multi-Tenant
@@ -206,6 +209,8 @@ barbers: id, user_id, tenant_id, specializations, created_at, updated_at
 - Verificação de associação do usuário ao tenant
 - Controle de acesso baseado em papéis por tenant
 - Isolamento de dados entre tenants
+- Hooks personalizados para lógica de autenticação específica por tenant
+- Hooks personalizados para lógica de autenticação específica por tenant
 
 ### Middleware
 
@@ -332,7 +337,7 @@ barbers: id, user_id, tenant_id, specializations, created_at, updated_at
 2. Configuração do Tailwind CSS e ShadCN UI
 3. Configuração do Docker e PostgreSQL
 4. Configuração do Drizzle ORM
-5. Configuração do NextAuth.js
+5. Configuração do Better Auth
 
 ### Fase 2: Autenticação e Autorização
 
