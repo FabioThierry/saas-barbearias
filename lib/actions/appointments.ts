@@ -7,6 +7,7 @@ import {
   updateAppointmentStatus,
   confirmAppointment,
   cancelAppointment,
+  rescheduleAppointment,
 } from "@/lib/services/appointments";
 import { getServiceById } from "@/lib/services/services";
 import { getBarberById } from "@/lib/services/barbers";
@@ -35,11 +36,17 @@ export async function createAppointmentAction(
 ): Promise<AppointmentFormState> {
   const session = await getSession();
   if (!session) {
-    return { success: false, message: "You must be logged in to book an appointment" };
+    return {
+      success: false,
+      message: "You must be logged in to book an appointment",
+    };
   }
 
   if (!session.user.tenantId) {
-    return { success: false, message: "You are not associated with any barbershop" };
+    return {
+      success: false,
+      message: "You are not associated with any barbershop",
+    };
   }
 
   const rawData = {
@@ -61,7 +68,11 @@ export async function createAppointmentAction(
     };
   }
 
-  const { serviceId, barberId, scheduledDate: scheduledDateStr } = validationResult.data;
+  const {
+    serviceId,
+    barberId,
+    scheduledDate: scheduledDateStr,
+  } = validationResult.data;
 
   try {
     const service = await getServiceById(serviceId);
@@ -83,7 +94,10 @@ export async function createAppointmentAction(
     }
 
     if (service.tenantId !== barber.tenantId) {
-      return { success: false, message: "Invalid service and barber combination" };
+      return {
+        success: false,
+        message: "Invalid service and barber combination",
+      };
     }
 
     const scheduledDate = new Date(scheduledDateStr);
@@ -117,7 +131,10 @@ export async function createAppointmentAction(
     return { success: true, message: "Appointment booked successfully!" };
   } catch (error) {
     console.error("Error creating appointment:", error);
-    return { success: false, message: "Failed to book appointment. Please try again." };
+    return {
+      success: false,
+      message: "Failed to book appointment. Please try again.",
+    };
   }
 }
 
@@ -173,7 +190,10 @@ export async function updateAppointmentStatusAction(
     session.user.role !== UserRole.SuperAdmin &&
     session.user.role !== UserRole.Barber
   ) {
-    return { success: false, message: "You don't have permission to update appointments" };
+    return {
+      success: false,
+      message: "You don't have permission to update appointments",
+    };
   }
 
   try {
@@ -184,5 +204,38 @@ export async function updateAppointmentStatusAction(
   } catch (error) {
     console.error("Error updating appointment:", error);
     return { success: false, message: "Failed to update appointment" };
+  }
+}
+
+export async function rescheduleAppointmentAction(
+  appointmentId: string,
+  newScheduledDate: string
+): Promise<{ success: boolean; message: string }> {
+  const session = await getSession();
+  if (!session) {
+    return { success: false, message: "Unauthorized" };
+  }
+
+  try {
+    // Validate the new date
+    const newDate = new Date(newScheduledDate);
+    if (isNaN(newDate.getTime())) {
+      return { success: false, message: "Invalid date format" };
+    }
+
+    const now = new Date();
+    if (newDate < now) {
+      return { success: false, message: "Cannot reschedule to a past date" };
+    }
+
+    // Update the appointment with the new date
+    await rescheduleAppointment(appointmentId, newDate);
+
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/appointments");
+    return { success: true, message: "Appointment rescheduled successfully" };
+  } catch (error) {
+    console.error("Error rescheduling appointment:", error);
+    return { success: false, message: "Failed to reschedule appointment" };
   }
 }

@@ -56,7 +56,7 @@ export async function getAppointmentsByTenant(
   const allUserIds = [...new Set([...customerIds, ...barberUserIds])];
 
   let userMap = new Map<string, { id: string; name: string; email: string }>();
-  
+
   if (allUserIds.length > 0) {
     const users = await db
       .select({ id: user.id, name: user.name, email: user.email })
@@ -109,7 +109,10 @@ export async function getAppointmentsByBarber(
     .from(appointments)
     .innerJoin(services, eq(appointments.serviceId, services.id))
     .where(
-      and(eq(appointments.barberId, barberId), eq(appointments.tenantId, tenantId))
+      and(
+        eq(appointments.barberId, barberId),
+        eq(appointments.tenantId, tenantId)
+      )
     )
     .orderBy(desc(appointments.scheduledDate));
 
@@ -153,9 +156,7 @@ export async function getAppointmentsByCustomer(
   }));
 }
 
-export async function getTodayAppointments(
-  tenantId: string
-): Promise<number> {
+export async function getTodayAppointments(tenantId: string): Promise<number> {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today);
@@ -175,9 +176,7 @@ export async function getTodayAppointments(
   return result[0]?.count || 0;
 }
 
-export async function getWeekAppointments(
-  tenantId: string
-): Promise<number> {
+export async function getWeekAppointments(tenantId: string): Promise<number> {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const nextWeek = new Date(today);
@@ -257,6 +256,21 @@ export async function cancelAppointment(id: string): Promise<boolean> {
   await db
     .update(appointments)
     .set({ status: "cancelled", updatedAt: new Date() })
+    .where(eq(appointments.id, id));
+  return true;
+}
+
+export async function rescheduleAppointment(
+  id: string,
+  newScheduledDate: Date
+): Promise<boolean> {
+  await db
+    .update(appointments)
+    .set({
+      scheduledDate: newScheduledDate,
+      status: "rescheduled", // We can update the status to rescheduled
+      updatedAt: new Date(),
+    })
     .where(eq(appointments.id, id));
   return true;
 }
